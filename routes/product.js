@@ -93,6 +93,7 @@ router.post("/app-events", async (req, res) => {
             } catch (err) {
                 res.status(500).json({ err: err, success: false })
             }
+            break;
         default:
             res.status(500).json({ msg: 'Invalid Event', success: false })
             break;
