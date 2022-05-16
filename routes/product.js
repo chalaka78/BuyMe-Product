@@ -1,49 +1,48 @@
 const res = require("express/lib/response");
 const Product = require("../models/Product");
-//const {verifyToken, verifyTokenAndAuthorization, verifyTokenAndAdmin} = require("./VerifyToken");
 const router = require("express").Router();
 
 //CREATE
-router.post("/",async(req,res)=>{
+router.post("/add-product", async (req, res) => {
     const newProduct = new Product(req.body);
-    try{
+    try {
         const savedProduct = await newProduct.save();
         res.status(200).json(savedProduct);
-    }catch(err){
+    } catch (err) {
         res.status(500).json(err)
     }
 });
 
 
 //Update
-router.put("/:id", async (req, res) => {
-   try{
-       const updatedProdcut = await Pro.findByIdAndUpdate(
-        req.params.id, 
-        {
-           $set: req.body
-        },
-        {new:true}
-       );
-       res.status(200).json(updatedProdcut);
-   }catch (err){
+router.put("/edit-product/:id", async (req, res) => {
+    try {
+        const updatedProdcut = await Pro.findByIdAndUpdate(
+            req.params.id,
+            {
+                $set: req.body
+            },
+            { new: true }
+        );
+        res.status(200).json(updatedProdcut);
+    } catch (err) {
         res.status(500).json(err);
-   }
+    }
 });
 
 //Delete
-router.delete("/:id", async (req, res) => {
-    try{
+router.delete("/delete-product/:id", async (req, res) => {
+    try {
         await Product.findByIdAndDelete(req.params.id)
         res.status(200).json("Product has been deleted")
-    }catch (err) {
+    } catch (err) {
         res.status(500).json(err);
     }
 });
 
 //Get Prodcut
-router.get("/find/:id", async(req, res) => {
-    try{
+router.get("/get-product/:id", async (req, res) => {
+    try {
         const product = await Product.findById(req.params.id);
         res.status(200).json(product);
     } catch (err) {
@@ -52,25 +51,43 @@ router.get("/find/:id", async(req, res) => {
 });
 
 //Get All Products
-router.get("/", async (req, res) => {
+router.get("/get-all", async (req, res) => {
     const qNew = req.query.new
     const qCategory = req.query.category;
-    try{
+    try {
         let products;
-        if(qNew){
-            products = await Product.find().sort({createdAt: -1}).limit(5)
-        }else if(qCategory){
+        if (qNew) {
+            products = await Product.find().sort({ createdAt: -1 }).limit(5)
+        } else if (qCategory) {
             products = await Product.find({
-                categories:{
-                    $in:[qCategory],
+                categories: {
+                    $in: [qCategory],
                 },
             });
-        }else{
+        } else {
             products = await Product.find();
-        } 
+        }
         res.status(200).json(products);
-    }catch (err) {
+    } catch (err) {
         res.status(500).json(err);
+    }
+});
+
+router.post("/app-events", async (req, res) => {
+    const { event, data } = req.body.payload;
+
+    switch (event) {
+        case 'GET_PRODUCT':
+            const { product_id } = data;
+            try {
+                const product = await Product.findById(product_id);
+                res.status(200).json({ data: product, success: true });
+            } catch (err) {
+                res.status(500).json({ err: err, success: false })
+            }
+        default:
+            res.status(500).json({ msg: 'Invalid Event', success: false })
+            break;
     }
 });
 
