@@ -15,12 +15,20 @@ router.post("/add-product", async (req, res) => {
 
 
 //Update
-router.put("/edit-product/:id", async (req, res) => {
+router.post("/edit-product", async (req, res) => {
     try {
-        const updatedProdcut = await Pro.findByIdAndUpdate(
-            req.params.id,
+        const updatedProdcut = await Product.findByIdAndUpdate(
+            req.body.product_id,
             {
-                $set: req.body
+                $set: {
+                    title: req.body.title,
+                    desc: req.body.desc,
+                    img: req.body.img,
+                    categories: req.body.categories,
+                    size: req.body.size,
+                    color: req.body.color,
+                    price: req.body.price
+                }
             },
             { new: true }
         );
