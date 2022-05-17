@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: buyme-product-k8s
+spec:
+  selector:
+    app: buyme-product-k8s
+  ports:
+    - protocol: TCP
+      port: 4008
+  type: LoadBalancer

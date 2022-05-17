@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: buyme-product-k8s
+spec:
+  selector:
+    matchLabels:
+      app: buyme-product-k8s
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: buyme-product-k8s
+    spec:
+      containers:
+        - name: buyme-product-k8s
+          image: chalaka78/product_image:latest
+          ports:
+            - containerPort: 4008
